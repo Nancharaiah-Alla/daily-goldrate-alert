@@ -1,0 +1,28 @@
+name: Daily Gold Rate Alert
+
+on:
+  schedule:
+    # Runs at 04:45 AM UTC = 10:15 AM IST every day
+    - cron: '45 4 * * *'
+  workflow_dispatch:
+
+jobs:
+  send-gold-rate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run Gold Agent
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python gold_agent.py
